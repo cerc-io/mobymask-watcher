@@ -74,6 +74,49 @@ services:
     # GraphQL
       - "0.0.0.0:8083:8083"
 
+  watcher-db:
+    restart: unless-stopped
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_USER=vdbm
+      - POSTGRES_MULTIPLE_DATABASES=moby-mask-watcher,moby-mask-watcher-job-queue
+      - POSTGRES_EXTENSION=moby-mask-watcher-job-queue:pgcrypto
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./initdb.d:/docker-entrypoint-initdb.d
+      - watcher_db_data:/var/lib/postgresql/data
+    ports:
+      - "0.0.0.0:15432:5432"
+
+  moby-mask-watcher-server:
+    restart: unless-stopped
+    depends_on:
+      - geth
+    build:
+      context: ./graph-watcher-ts
+      args:
+        GIT_TOKEN: $GIT_TOKEN
+    image: vulcanize/graph-watcher-ts
+    command: ["sh", "-c", "yarn server"]
+    volumes:
+      - ./graph-watcher-ts/moby-mask-watcher.toml:/app/packages/moby-mask-watcher/environments/local.toml
+    ports:
+      - "0.0.0.0:3001:3001"
+
+  moby-mask-watcher-job-runner:
+    restart: unless-stopped
+    depends_on:
+      - moby-mask-watcher-server
+    build:
+      context: ./graph-watcher-ts
+      args:
+        GIT_TOKEN: $GIT_TOKEN
+    image: vulcanize/graph-watcher-ts
+    command: ["sh", "-c", "yarn job-runner"]
+    volumes:
+      - ./graph-watcher-ts/moby-mask-watcher.toml:/app/packages/moby-mask-watcher/environments/local.toml
+
 volumes:
   indexer_db_data:
   geth_data:
+  watcher_db_data:
