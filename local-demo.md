@@ -2,6 +2,12 @@
 
 * Follow the instructions in [Setup](./README.md#setup) to start the watcher along with the core services.
 
+* Start the services:
+
+  ```bash
+  docker-compose --profile watcher up -d 
+  ```
+
 * Clone the [MobyMask](https://github.com/vulcanize/MobyMask) repo.
 
 * Checkout to the branch with changes for using this watcher:

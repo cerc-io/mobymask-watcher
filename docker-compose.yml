@@ -102,6 +102,7 @@ services:
       - watcher_db_data:/var/lib/postgresql/data
     ports:
       - "0.0.0.0:15432:5432"
+    profiles: ["watcher"]
 
   moby-mask-watcher-server:
     restart: unless-stopped
@@ -117,6 +118,7 @@ services:
       - ./graph-watcher-ts/moby-mask-watcher.toml:/app/packages/moby-mask-watcher/environments/local.toml
     ports:
       - "0.0.0.0:3001:3001"
+    profiles: ["watcher"]
 
   moby-mask-watcher-job-runner:
     restart: unless-stopped
@@ -130,6 +132,7 @@ services:
     command: ["sh", "-c", "yarn job-runner"]
     volumes:
       - ./graph-watcher-ts/moby-mask-watcher.toml:/app/packages/moby-mask-watcher/environments/local.toml
+    profiles: ["watcher"]
 
 volumes:
   indexer_db_data:
