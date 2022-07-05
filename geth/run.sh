@@ -1,0 +1,38 @@
+#!/bin/sh
+
+geth \
+	--datadir ./data \
+	--nodiscover \
+	--syncmode full \
+	--gcmode archive \
+	--statediff \
+	--statediff.writing \
+	--statediff.db.type postgres \
+	--statediff.db.driver sqlx \
+	--statediff.db.nodeid "1" \
+	--statediff.db.clientname "client1" \
+	--statediff.db.host=$DB_HOST \
+	--statediff.db.port=$DB_PORT \
+	--statediff.db.name=$DB_NAME \
+	--statediff.db.user=$DB_USER \
+	--statediff.db.password=$DB_PASSWORD \
+	--verbosity "3" \
+	--networkid "41337" \
+	--allow-insecure-unlock \
+	--unlock "0xDC7d7A8920C8Eecc098da5B7522a5F31509b5Bfc" \
+	--password ./keys/password.txt \
+	--mine \
+	--miner.threads "1" \
+	--miner.etherbase "0xDC7d7A8920C8Eecc098da5B7522a5F31509b5Bfc" \
+	--http \
+	--http.addr "0.0.0.0" \
+	--http.port "8545" \
+	--http.corsdomain "*" \
+	--http.api "admin,debug,eth,miner,net,personal,txpool,web3,statediff" \
+	--http.vhosts "*" \
+	--ws \
+	--ws.addr "0.0.0.0" \
+	--ws.port "8546" \
+	--ws.origins "*" \
+	--ws.api "admin,debug,eth,miner,net,personal,txpool,web3,statediff" \
+	--rpc.allow-unprotected-txs
