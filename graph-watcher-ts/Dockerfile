@@ -2,8 +2,6 @@ FROM node:16.15.1-alpine3.16
 
 ARG GIT_TOKEN
 
-RUN echo $GIT_TOKEN
-
 RUN apk --update --no-cache add python3 alpine-sdk && \
     git config --global credential.helper \
     '!f() { echo username=author; echo "password=$GIT_TOKEN"; };f'

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# TODO: Move values to variables.
-
 geth \
 	--networkid "41337" \
 	--datadir "./data" \
