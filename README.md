@@ -2,7 +2,7 @@
 
 ## Setup
 
-* [Create a Github PAT (personal access token)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#creating-a-token) with `repo` and `read:packages` [scopes](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages#about-scopes-and-permissions-for-package-registries) and set.
+* [Create a Github PAT (personal access token)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#creating-a-token) with `repo` and `read:packages` [scopes](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages#about-scopes-and-permissions-for-package-registries).
 
 * Update the GIT_TOKEN in [.env](./.env) file with the Github PAT. This is used to access the private repo and packages.
 
