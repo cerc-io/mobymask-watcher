@@ -30,4 +30,4 @@
 
 ## Demos
 
-* [Local demo](./local-demo.md)
+* [Local demo](./demo/local.md)

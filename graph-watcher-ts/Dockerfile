@@ -12,6 +12,7 @@ RUN echo //npm.pkg.github.com/:_authToken=$GIT_TOKEN > ~/.npmrc
 
 RUN echo "git clone https://github.com/vulcanize/graph-watcher-ts.git" && \
     git clone https://github.com/vulcanize/graph-watcher-ts.git /app && \
-    cd app && yarn && yarn build
+    cd app && git checkout v0.2.1 && \
+    yarn && yarn build
 
 WORKDIR /app/packages/moby-mask-watcher

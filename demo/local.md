@@ -1,6 +1,6 @@
 # Demo
 
-* Follow the instructions in [Setup](./README.md#setup).
+* Follow the instructions in [Setup](../README.md#setup).
 
 * Start the core services:
 
@@ -51,16 +51,14 @@
   yarn claimMember --contract $MOBY_ADDRESS --name oldMember
   ```
 
-* Stop the docker services and reset the indexer database to demonstrate statediffing only for the concerned contract. The database will later be filled by `eth-statediff-fill-service` with data only for the concerned contract. 
+* Stop the docker services and reset the indexer database to demonstrate statediffing only for the watched address. The database will later be filled by `eth-statediff-fill-service` with data only for the watched address. 
 
   ```bash
   # In mobymask-watcher repo
   docker-compose stop
 
-  # Remove container to remove the volume used
+  # Remove the indexer database
   docker-compose rm -f ipld-eth-db
-
-  # Remove the volume
   docker volume rm mobymask-watcher_indexer_db_data
   ```
 
@@ -76,7 +74,7 @@
 
   * Get the block at which it was deployed by checking the `packages/hardhat/deployments/localhost/PhisherRegistry.json` file in MobyMask repo. In the JSON file the block number at which contract was deployed at is set in `receipt.blockNumber`.
 
-    Set the deployment block number:
+    Set the MobyMask contract deployment block number:
 
     ```bash
     export DEPLOY_BLOCK_NUMBER="<DEPLOY_BLOCK_NUMBER>"
