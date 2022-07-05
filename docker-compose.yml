@@ -81,7 +81,6 @@ services:
     build:
       context: ./eth-statediff-fill-service
     environment:
-      VDB_COMMAND: "serve"
       DATABASE_USER: "vdbm"
       DATABASE_NAME: "indexer"
       DATABASE_HOSTNAME: "ipld-eth-db"

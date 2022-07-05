@@ -43,14 +43,3 @@
 ## Demos
 
 * [Local demo](./local-demo.md)
-
-## Troubleshooting
-
-* If some service fails in docker-compose, it can be restarted using the command below.
-
-  ```bash
-  docker-compose restart SERVICE_NAME
-
-  # Example
-  docker-compose restart ipld-eth-server
-  ```

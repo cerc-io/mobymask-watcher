@@ -2,8 +2,8 @@
 
 echo "Beginning the eth-statediff-fill-service process"
 
-echo running: eth-statediff-fill-service ${VDB_COMMAND} --config=./eth-statediff-fill-service/environments/example.toml
-eth-statediff-fill-service ${VDB_COMMAND} --config=./eth-statediff-fill-service/environments/example.toml
+echo running: eth-statediff-fill-service serve --config=config.toml
+eth-statediff-fill-service serve --config=config.toml
 rv=$?
 
 if [ $rv != 0 ]; then

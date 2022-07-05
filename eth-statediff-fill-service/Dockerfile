@@ -8,7 +8,7 @@ RUN apk add busybox-extras
 WORKDIR /app
 
 RUN git clone https://github.com/vulcanize/eth-statediff-fill-service.git && \
-	cd eth-statediff-fill-service && git checkout sharding && \
+	cd eth-statediff-fill-service && git checkout v4.0.2-alpha && \
 	go mod download
 
 # Build the binary

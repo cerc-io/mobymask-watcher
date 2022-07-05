@@ -1,0 +1,16 @@
+[database]
+	name     = "indexer" # $DATABASE_NAME
+	hostname = "ipld-eth-db" # $DATABASE_HOSTNAME
+	port     = 5432 # $DATABASE_PORT
+	user     = "vdbm" # $DATABASE_USER
+	password = "password" # $DATABASE_PASSWORD
+
+[log]
+	level = "info" # $LOGRUS_LEVEL
+
+[ethereum]
+	httpPath = "geth:8545" # $ETH_HTTP_PATH
+
+[watch]
+	[watch.fill]
+		interval = 30
