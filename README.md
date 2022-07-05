@@ -13,13 +13,13 @@
   Follow the steps below to generate the token:
 
   1. Create a github PAT (personal access token) if it does not already exist.
-  
+
       https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#creating-a-token
 
   2. Configure the PAT with `repo` and `read:packages` scopes.
-      
+
       Scopes required for github packages is mentioned in https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages#about-scopes-and-permissions-for-package-registries.
-  
+
   3. Set the PAT generated in `.env` file and assign it to GIT_TOKEN.
 
 * Reset databases (if docker was already running):
@@ -43,3 +43,14 @@
 ## Demos
 
 * [Local demo](./local-demo.md)
+
+## Troubleshooting
+
+* If some service fails in docker-compose, it can be restarted using the command below.
+
+  ```bash
+  docker-compose restart SERVICE_NAME
+
+  # Example
+  docker-compose restart ipld-eth-server
+  ```

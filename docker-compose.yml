@@ -74,6 +74,22 @@ services:
     # GraphQL
       - "0.0.0.0:8083:8083"
 
+  eth-statediff-fill-service:
+    restart: unless-stopped
+    depends_on:
+      - ipld-eth-db
+    build:
+      context: ./eth-statediff-fill-service
+    environment:
+      VDB_COMMAND: "serve"
+      DATABASE_USER: "vdbm"
+      DATABASE_NAME: "indexer"
+      DATABASE_HOSTNAME: "ipld-eth-db"
+      DATABASE_PORT: 5432
+      DATABASE_PASSWORD: "password"
+      ETH_HTTP_PATH: "geth:8545"
+      WATCHED_ADDRESS_GAP_FILLER_INTERVAL: 60
+
   watcher-db:
     restart: unless-stopped
     image: postgres:12-alpine
