@@ -5,7 +5,8 @@ services:
   migrations:
     restart: on-failure
     depends_on:
-      - ipld-eth-db
+      ipld-eth-db:
+        condition: service_healthy
     image: vulcanize/ipld-eth-db:v4.1.4-alpha
     environment:
       DATABASE_USER: "vdbm"
@@ -26,11 +27,17 @@ services:
     ports:
       - "0.0.0.0:15434:5432"
     command: ["postgres", "-c", "log_statement=all"]
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "5432"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
 
   geth:
     restart: unless-stopped
     depends_on:
-      - ipld-eth-db
+      - migrations
     build:
       context: ./geth
     environment:
@@ -43,11 +50,17 @@ services:
       - geth_data:/app/data
     ports:
       - "0.0.0.0:8545:8545"
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "8545"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
 
   ipld-eth-server:
     restart: unless-stopped
     depends_on:
-      - ipld-eth-db
+      - migrations
     image: vulcanize/ipld-eth-server:v4.0.5-alpha
     environment:
       VDB_COMMAND: "serve"
@@ -73,11 +86,20 @@ services:
       - "0.0.0.0:8082:8082"
     # GraphQL
       - "0.0.0.0:8083:8083"
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "8082"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
 
   eth-statediff-fill-service:
     restart: unless-stopped
     depends_on:
-      - ipld-eth-db
+      migrations:
+        condition: service_started
+      geth:
+        condition: service_healthy
     build:
       context: ./eth-statediff-fill-service
     environment:
@@ -103,11 +125,20 @@ services:
     ports:
       - "0.0.0.0:15432:5432"
     profiles: ["watcher"]
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "5432"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
 
   moby-mask-watcher-server:
     restart: unless-stopped
     depends_on:
-      - geth
+      ipld-eth-server:
+        condition: service_healthy
+      watcher-db:
+        condition: service_healthy
     build:
       context: ./graph-watcher-ts
       args:
@@ -119,11 +150,22 @@ services:
     ports:
       - "0.0.0.0:3001:3001"
     profiles: ["watcher"]
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "3001"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
 
   moby-mask-watcher-job-runner:
     restart: unless-stopped
     depends_on:
-      - moby-mask-watcher-server
+      ipld-eth-server:
+        condition: service_healthy
+      moby-mask-watcher-server:
+        condition: service_healthy
+      watcher-db:
+        condition: service_healthy
     build:
       context: ./graph-watcher-ts
       args:
