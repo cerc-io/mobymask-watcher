@@ -4,6 +4,10 @@ geth \
 	--datadir ./data \
 	--syncmode full \
 	--gcmode archive \
+	--cache 10000 \
+	--cache.database 50 \
+	--cache.trie 50 \
+	--cache.gc 0 \
 	--statediff \
 	--statediff.writing \
 	--statediff.db.type postgres \
@@ -21,10 +25,6 @@ geth \
 	--http.addr "0.0.0.0" \
 	--http.port "8545" \
 	--http.corsdomain "*" \
-	--http.api "admin,debug,eth,miner,net,personal,txpool,web3,statediff" \
+	--http.api "web3,eth,statediff,net,debug" \
 	--http.vhosts "*" \
 	--ws \
-	--ws.addr "0.0.0.0" \
-	--ws.port "8546" \
-	--ws.origins "*" \
-	--ws.api "admin,debug,eth,miner,net,personal,txpool,web3,statediff" \

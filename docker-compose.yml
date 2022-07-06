@@ -47,7 +47,7 @@ services:
       DB_PORT: 5432
       DB_PASSWORD: password
     volumes:
-      - $GETH_DATA:/app/data/geth/chaindata
+      - $CHAINDATA_DIR:/app/data/geth/chaindata
     ports:
       - "0.0.0.0:8545:8545"
     healthcheck:
@@ -109,6 +109,18 @@ services:
       ETH_HTTP_PATH: "geth:8545"
       WATCHED_ADDRESS_GAP_FILLER_INTERVAL: 60
 
+  watch-address:
+    restart: on-failure
+    depends_on:
+      geth:
+        condition: service_healthy
+    build:
+      context: ./watch-address
+    environment:
+      MOBY_ADDRESS: $MOBY_ADDRESS
+      DEPLOY_BLOCK_NUMBER: $DEPLOY_BLOCK_NUMBER
+      GETH_HTTP_PATH: "geth:8545"
+
   watcher-db:
     restart: unless-stopped
     image: postgres:12-alpine
@@ -122,7 +134,6 @@ services:
       - watcher_db_data:/var/lib/postgresql/data
     ports:
       - "0.0.0.0:15432:5432"
-    profiles: ["watcher"]
     healthcheck:
       test: ["CMD", "nc", "-v", "localhost", "5432"]
       interval: 20s
@@ -147,7 +158,6 @@ services:
       - ./graph-watcher-ts/moby-mask-watcher.toml:/app/packages/moby-mask-watcher/environments/local.toml
     ports:
       - "0.0.0.0:3001:3001"
-    profiles: ["watcher"]
     healthcheck:
       test: ["CMD", "nc", "-v", "localhost", "3001"]
       interval: 20s
@@ -172,7 +182,6 @@ services:
     command: ["sh", "-c", "yarn job-runner"]
     volumes:
       - ./graph-watcher-ts/moby-mask-watcher.toml:/app/packages/moby-mask-watcher/environments/local.toml
-    profiles: ["watcher"]
 
   moby-mask:
     restart: unless-stopped
