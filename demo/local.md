@@ -37,7 +37,7 @@
 * Stop the docker services and reset the indexer database to demonstrate statediffing only for the watched address. The database will later be filled by `eth-statediff-fill-service` with data only for the watched address. 
 
   ```bash
-  # In mobymask-watcher repo
+  # Stop the docker services
   docker-compose stop
 
   # Remove the indexer database
@@ -85,7 +85,7 @@
   eth-statediff-fill-service_1    | time="2022-07-05T09:17:59Z" level=info msg="running watched address gap filler for block range: (30, 137)"
   ```
 
-* Run the following GQL mutation GraphQL endpoint http://127.0.0.1:3001/graphql to start watching the contract in moby-mask-watcher:
+* Run the following GQL mutation in GraphQL endpoint http://127.0.0.1:3001/graphql to start watching the contract in moby-mask-watcher:
 
   ```graphql
   mutation {
@@ -175,7 +175,7 @@
 
 * The `isMember` and `isPhisher` maps should be indexed. Check the moby-mask-watcher database tables `is_phisher` and `is_member`; there should be entries at the event blockHash with `value` set to true. The data is indexed in `handleEvent` method in the [hooks file](https://github.com/vulcanize/graph-watcher-ts/blob/graph-watcher/packages/moby-mask-watcher/src/hooks.ts).
 
-  NOTE: The credentials for moby-mask-watcher database can be taken from `watcher-db` service in [docker-compose.yml](./docker-compose.yml) file.
+  NOTE: The credentials for moby-mask-watcher database can be taken from `watcher-db` service in [docker-compose.yml](../docker-compose.yml) file.
 
 * Query with event blockHash and check `isPhisher` and `isMember` in GraphQL playground for the new names:
 
@@ -208,16 +208,6 @@
   The data is fetched from watcher database as it is already indexed.
 
 ## Reset / Clean up
-
-* Reset and clear deployments in MobyMask repo:
-
-  ```bash
-  cd packages/hardhat
-
-  # Remove previous deployments in local network if any
-  cd deployments
-  git clean -xdf
-  ```
 
 * To stop the services running in background run:
 
