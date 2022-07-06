@@ -176,7 +176,22 @@ services:
       - ./graph-watcher-ts/moby-mask-watcher.toml:/app/packages/moby-mask-watcher/environments/local.toml
     profiles: ["watcher"]
 
+  moby-mask:
+    restart: unless-stopped
+    depends_on:
+      geth:
+        condition: service_healthy
+    build:
+      context: ./moby-mask
+    image: vulcanize/moby-mask
+    stdin_open: true
+    tty: true
+    network_mode: "host"
+    volumes:
+      - moby_data:/app/packages/hardhat
+
 volumes:
   indexer_db_data:
   geth_data:
   watcher_db_data:
+  moby_data:
