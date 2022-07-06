@@ -8,27 +8,10 @@
   docker-compose up -d
   ```
 
-* Clone the [MobyMask](https://github.com/vulcanize/MobyMask) repo.
-
-* Checkout to the branch with changes for deploying the MobyMask contract and making transactions:
-
-  ```bash
-  # In MobyMask repo.
-  git checkout use-laconic-watcher-as-hosted-index
-  ```
-
-* Run yarn to install the packages:
-
-  ```bash
-  yarn
-  ```
-
 * Deploy the contract:
 
   ```bash
-  cd packages/hardhat
-
-  yarn deploy
+  docker-compose exec moby-mask yarn deploy
   # deploying "PhisherRegistry" (tx: 0xaebeb2e883ece1f679304ec46f5dc61ca74f9e168427268a7dfa8802195b8de0)...: deployed at <MOBY_ADDRESS> with 2306221 gas
   # $ hardhat run scripts/publish.js
   # ✅  Published contracts to the subgraph package.
@@ -44,11 +27,11 @@
 * Update `isPhisher` and `isMember` maps in the deployed contract with names:
 
   ```bash
-  yarn claimPhisher --contract $MOBY_ADDRESS --name oldPhisher
+  docker-compose exec moby-mask yarn claimPhisher --contract $MOBY_ADDRESS --name oldPhisher
   ```
 
   ```bash
-  yarn claimMember --contract $MOBY_ADDRESS --name oldMember
+  docker-compose exec moby-mask yarn claimMember --contract $MOBY_ADDRESS --name oldMember
   ```
 
 * Stop the docker services and reset the indexer database to demonstrate statediffing only for the watched address. The database will later be filled by `eth-statediff-fill-service` with data only for the watched address. 
@@ -72,7 +55,11 @@
 
 * Set the deployed MobyMask contract as the watched address in Geth. This will invoke gap filling by `eth-statediff-fill-service`.
 
-  * Get the block at which it was deployed by checking the `packages/hardhat/deployments/localhost/PhisherRegistry.json` file in MobyMask repo. In the JSON file the block number at which contract was deployed at is set in `receipt.blockNumber`.
+  * Get the block at which it was deployed. We can get this information from a JSON file created on deploying the contract:
+
+    ```bash
+    docker-compose exec moby-mask cat deployments/localhost/PhisherRegistry.json | grep blockNumber
+    ```
 
     Set the MobyMask contract deployment block number:
 
@@ -177,11 +164,11 @@
 * Update contract `isPhisher` and `isMember` maps with new names:
 
   ```bash
-  yarn claimPhisher --contract $MOBY_ADDRESS --name newPhisher 
+  docker-compose exec moby-mask yarn claimPhisher --contract $MOBY_ADDRESS --name newPhisher 
   ```
 
   ```bash
-  yarn claimMember --contract $MOBY_ADDRESS --name newMember
+  docker-compose exec moby-mask yarn claimMember --contract $MOBY_ADDRESS --name newMember
   ```
 
 * The events should be visible in the subscription at GQL endpoint. Note down the event blockHash from result.
