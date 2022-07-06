@@ -30,4 +30,5 @@
 
 ## Demos
 
+* [Mainnet demo](./demo/mainnet.md)
 * [Local demo](./demo/local.md)

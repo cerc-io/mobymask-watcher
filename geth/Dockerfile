@@ -10,6 +10,4 @@ RUN wget https://github.com/vulcanize/go-ethereum/releases/download/v1.10.19-sta
 # copy all files
 ADD . .
 
-RUN ./init.sh
-
 CMD ["./run.sh"]
