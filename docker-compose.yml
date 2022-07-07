@@ -116,8 +116,8 @@ services:
     image: postgres:12-alpine
     environment:
       - POSTGRES_USER=vdbm
-      - POSTGRES_MULTIPLE_DATABASES=moby-mask-watcher,moby-mask-watcher-job-queue
-      - POSTGRES_EXTENSION=moby-mask-watcher-job-queue:pgcrypto
+      - POSTGRES_MULTIPLE_DATABASES=mobymask-watcher,mobymask-watcher-job-queue
+      - POSTGRES_EXTENSION=mobymask-watcher-job-queue:pgcrypto
       - POSTGRES_PASSWORD=password
     volumes:
       - ./initdb.d/multiple-postgressql-databases.sh:/docker-entrypoint-initdb.d/multiple-postgressql-databases.sh
@@ -132,7 +132,7 @@ services:
       retries: 15
       start_period: 10s
 
-  moby-mask-watcher-server:
+  mobymask-watcher-server:
     restart: unless-stopped
     depends_on:
       ipld-eth-server:
@@ -140,13 +140,11 @@ services:
       watcher-db:
         condition: service_healthy
     build:
-      context: ./graph-watcher-ts
-      args:
-        GIT_TOKEN: $GIT_TOKEN
-    image: vulcanize/graph-watcher-ts
+      context: ./watcher-ts
+    image: vulcanize/watcher-ts
     command: ["sh", "-c", "yarn server"]
     volumes:
-      - ./graph-watcher-ts/moby-mask-watcher.toml:/app/packages/moby-mask-watcher/environments/local.toml
+      - ./watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     ports:
       - "0.0.0.0:3001:3001"
     profiles: ["watcher"]
@@ -157,36 +155,33 @@ services:
       retries: 15
       start_period: 5s
 
-  moby-mask-watcher-job-runner:
+  mobymask-watcher-job-runner:
     restart: unless-stopped
     depends_on:
       ipld-eth-server:
         condition: service_healthy
-      moby-mask-watcher-server:
+      mobymask-watcher-server:
         condition: service_healthy
       watcher-db:
         condition: service_healthy
     build:
-      context: ./graph-watcher-ts
-      args:
-        GIT_TOKEN: $GIT_TOKEN
-    image: vulcanize/graph-watcher-ts
+      context: ./watcher-ts
+    image: vulcanize/watcher-ts
     command: ["sh", "-c", "yarn job-runner"]
     volumes:
-      - ./graph-watcher-ts/moby-mask-watcher.toml:/app/packages/moby-mask-watcher/environments/local.toml
+      - ./watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     profiles: ["watcher"]
 
-  moby-mask:
+  mobymask:
     restart: unless-stopped
     depends_on:
       geth:
         condition: service_healthy
     build:
-      context: ./moby-mask
-    image: vulcanize/moby-mask
+      context: ./mobymask
+    image: vulcanize/mobymask
     stdin_open: true
     tty: true
-    network_mode: "host"
     volumes:
       - moby_data:/app/packages/hardhat
 

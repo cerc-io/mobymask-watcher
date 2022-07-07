@@ -1,7 +1,5 @@
 # Demo
 
-* Follow the instructions in [Setup](../README.md#setup).
-
 * Start the core services:
 
   ```bash
@@ -11,7 +9,7 @@
 * Deploy the contract:
 
   ```bash
-  docker-compose exec moby-mask yarn deploy
+  docker-compose exec mobymask yarn deploy
   # deploying "PhisherRegistry" (tx: 0xaebeb2e883ece1f679304ec46f5dc61ca74f9e168427268a7dfa8802195b8de0)...: deployed at <MOBY_ADDRESS> with 2306221 gas
   # $ hardhat run scripts/publish.js
   # ✅  Published contracts to the subgraph package.
@@ -27,11 +25,11 @@
 * Update `isPhisher` and `isMember` maps in the deployed contract with names:
 
   ```bash
-  docker-compose exec moby-mask yarn claimPhisher --contract $MOBY_ADDRESS --name oldPhisher
+  docker-compose exec mobymask yarn claimPhisher --contract $MOBY_ADDRESS --name oldPhisher
   ```
 
   ```bash
-  docker-compose exec moby-mask yarn claimMember --contract $MOBY_ADDRESS --name oldMember
+  docker-compose exec mobymask yarn claimMember --contract $MOBY_ADDRESS --name oldMember
   ```
 
 * Stop the docker services and reset the indexer database to demonstrate statediffing only for the watched address. The database will later be filled by `eth-statediff-fill-service` with data only for the watched address. 
@@ -58,7 +56,7 @@
   * Get the block at which it was deployed. We can get this information from a JSON file created on deploying the contract:
 
     ```bash
-    docker-compose exec moby-mask cat deployments/localhost/PhisherRegistry.json | grep blockNumber
+    docker-compose exec mobymask cat deployments/localhost/PhisherRegistry.json | grep blockNumber
     ```
 
     Set the MobyMask contract deployment block number:
@@ -73,6 +71,12 @@
     curl http://localhost:8545 -H "Content-Type: application/json" -d '{ "jsonrpc":"2.0", "method":"statediff_watchAddress", "params":["add",[{ "Address":"'"$MOBY_ADDRESS"'", "CreatedAt": '"$DEPLOY_BLOCK_NUMBER"' }]], "id":1 }'
     ```
 
+    The output for successful CURL request should be:
+
+    ```
+    {"jsonrpc":"2.0","id":1,"result":null}
+    ```
+
 * Check that the `eth-statediff-fill-service` has started gap filling for the watched address.
 
   ```bash
@@ -85,7 +89,7 @@
   eth-statediff-fill-service_1    | time="2022-07-05T09:17:59Z" level=info msg="running watched address gap filler for block range: (30, 137)"
   ```
 
-* Run the following GQL mutation in GraphQL endpoint http://127.0.0.1:3001/graphql to start watching the contract in moby-mask-watcher:
+* Run the following GQL mutation in GraphQL endpoint http://127.0.0.1:3001/graphql to start watching the contract in mobymask-watcher:
 
   ```graphql
   mutation {
@@ -164,18 +168,26 @@
 * Update contract `isPhisher` and `isMember` maps with new names:
 
   ```bash
-  docker-compose exec moby-mask yarn claimPhisher --contract $MOBY_ADDRESS --name newPhisher 
+  docker-compose exec mobymask yarn claimPhisher --contract $MOBY_ADDRESS --name newPhisher 
   ```
 
   ```bash
-  docker-compose exec moby-mask yarn claimMember --contract $MOBY_ADDRESS --name newMember
+  docker-compose exec mobymask yarn claimMember --contract $MOBY_ADDRESS --name newMember
   ```
 
 * The events should be visible in the subscription at GQL endpoint. Note down the event blockHash from result.
 
-* The `isMember` and `isPhisher` maps should be indexed. Check the moby-mask-watcher database tables `is_phisher` and `is_member`; there should be entries at the event blockHash with `value` set to true. The data is indexed in `handleEvent` method in the [hooks file](https://github.com/vulcanize/graph-watcher-ts/blob/graph-watcher/packages/moby-mask-watcher/src/hooks.ts).
+* The `isMember` and `isPhisher` maps should be indexed. Check the mobymask-watcher database tables `is_phisher` and `is_member`:
 
-  NOTE: The credentials for moby-mask-watcher database can be taken from `watcher-db` service in [docker-compose.yml](../docker-compose.yml) file.
+  ```bash
+  docker-compose exec watcher-db psql -U vdbm mobymask-watcher -c "SELECT block_hash, block_number, contract_address, key0, value FROM is_phisher"
+  ```
+
+  ```bash
+  docker-compose exec watcher-db psql -U vdbm mobymask-watcher -c "SELECT block_hash, block_number, contract_address, key0, value FROM is_member"
+  ```
+
+  There should be entries for the event blockHash with `value` set to true. The data is indexed in `handleEvent` method in the [hooks file](https://github.com/vulcanize/watcher-ts/blob/main/packages/mobymask-watcher/src/hooks.ts).
 
 * Query with event blockHash and check `isPhisher` and `isMember` in GraphQL playground for the new names:
 

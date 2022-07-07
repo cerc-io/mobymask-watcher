@@ -8,3 +8,5 @@ RUN echo "git clone https://github.com/vulcanize/MobyMask.git" && \
     yarn
 
 WORKDIR /app/packages/hardhat
+
+RUN sed -i 's/localhost:8545/geth:8545/' hardhat.config.js
