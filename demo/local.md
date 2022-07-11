@@ -3,7 +3,7 @@
 * Start the core services:
 
   ```bash
-  docker-compose up -d
+  docker-compose up --build -d
   ```
 
 * Deploy the contract:
@@ -46,7 +46,7 @@
 * Start all the services (core and watcher) now: 
 
   ```bash
-  docker-compose --profile watcher up -d
+  docker-compose --profile watcher up --build -d
   ```
 
   Geth will start indexing from the block where it last stopped. So the previous blocks can be filled by `eth-statediff-fill-service`.

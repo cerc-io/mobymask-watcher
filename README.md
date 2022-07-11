@@ -5,7 +5,7 @@
 * Intialize servers:
 
   ```bash
-  docker-compose up -d
+  docker-compose up --build -d
   ```
 
 * Optionally, to follow the container logs:
