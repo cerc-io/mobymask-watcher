@@ -19,13 +19,17 @@
   docker-compose up -d --build watcher-db
   ```
 
+* Check that watcher-db service is up and healthy
+
+  ```bash
+  docker-compose ps
+  ```
+
 * Dump indexed data for old mainnet blocks in mobymask-watcher database:
 
   ```bash
-  psql -U vdbm -h 127.0.0.1 -p 15432 mobymask-watcher < watcher-ts/mobymask-watcher-db.sql
+  docker-compose exec -T watcher-db psql -U vdbm mobymask-watcher < watcher-ts/mobymask-watcher-db.sql
   ```
-
-  *NOTE: For the password prompt above use `password`*
 
 * The `isMember` and `isPhisher` maps should be indexed with old mainnet blocks. Check the mobymask-watcher database tables `is_member` and `is_phisher`:
 
@@ -132,8 +136,3 @@
   ```bash
   docker-compose down -v
   ```
-
-## Demos
-
-* [Mainnet demo](./demo/mainnet.md)
-* [Local demo](./demo/local.md)
