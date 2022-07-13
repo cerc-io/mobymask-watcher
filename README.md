@@ -13,7 +13,31 @@
 
 ## Run
 
-* Intialize servers:
+* Start watcher-db service:
+
+  ```bash
+  docker-compose up -d --build watcher-db
+  ```
+
+* Dump indexed data for old mainnet blocks in mobymask-watcher database:
+
+  ```bash
+  psql -U vdbm -h 127.0.0.1 -p 15432 mobymask-watcher < watcher-ts/mobymask-watcher-db.sql
+  ```
+
+  *NOTE: For the password prompt above use `password`*
+
+* The `isMember` and `isPhisher` maps should be indexed with old mainnet blocks. Check the mobymask-watcher database tables `is_member` and `is_phisher`:
+
+  ```bash
+  docker-compose exec watcher-db psql -U vdbm mobymask-watcher -c "SELECT block_hash, block_number, contract_address, key0, value FROM is_member"
+  ```
+
+  ```bash
+  docker-compose exec watcher-db psql -U vdbm mobymask-watcher -c "SELECT block_hash, block_number, contract_address, key0, value FROM is_phisher"
+  ```
+
+* Intialize and start all services:
 
   ```bash
   docker-compose up -d --build
@@ -25,53 +49,17 @@
   docker-compose logs -f
   ```
 
-* Check that `eth-statediff-fill-service` has indexed [all blocks for MobyMask contract](https://etherscan.io/address/0xb06e6db9288324738f04fcaac910f5a60102c1f8). Query for the last MobyMask contract block using ipld-eth-server:
+* Run the following GQL mutation [GraphQL endpoint](http://127.0.0.1:3001/graphql) to start watching the contract in mobymask-watcher:
 
   ```graphql
-  {
-    block(number: 14885755) {
-      hash
-    }
+  mutation {
+    watchContract(
+      address: "0xB06E6DB9288324738f04fCAAc910f5A60102C1F8"
+      kind: "PhisherRegistry"
+      checkpoint: true
+    )
   }
   ```
-
-  If the block is not indexed, instead of getting blockHash value, error message will be returned:
-
-  ```
-  "message": "sql: no rows in result set",
-  ```
-
-* Index the blocks in mobymask-watcher.
-
-  * Watch the contract:
-
-    ```bash
-    docker-compose exec mobymask-watcher yarn watch:contract --address 0xB06E6DB9288324738f04fCAAc910f5A60102C1F8 --kind PhisherRegistry --checkpoint true --starting-block 14869713
-    ```
-  
-  * Index the [mainnet blocks for MobyMask contract](https://etherscan.io/address/0xb06e6db9288324738f04fcaac910f5a60102c1f8):
-
-    ```
-    docker-compose exec mobymask-watcher yarn index-block --block <BLOCK_NUMBER>
-    ```
-
-* The `isMember` and `isPhisher` maps should be indexed. Check the mobymask-watcher database tables `is_phisher` and `is_member`:
-
-  ```bash
-  docker-compose exec watcher-db psql -U vdbm mobymask-watcher -c "SELECT block_hash, block_number, contract_address, key0, value FROM is_phisher"
-  ```
-
-  ```bash
-  docker-compose exec watcher-db psql -U vdbm mobymask-watcher -c "SELECT block_hash, block_number, contract_address, key0, value FROM is_member"
-  ```
-
-* Start the mobymask-watcher job-runner and server in active mode:
-
-  ```bash
-  docker-compose --profile active-watcher up -d --build
-  ```
-
-  The watcher will start indexing blocks at head.
 
 * Get latest blockHash in [GraphQL endpoint](http://127.0.0.1:3001/graphql):
 
