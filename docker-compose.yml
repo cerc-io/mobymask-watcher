@@ -91,24 +91,6 @@ services:
       retries: 15
       start_period: 5s
 
-  eth-statediff-fill-service:
-    restart: unless-stopped
-    depends_on:
-      migrations:
-        condition: service_started
-      geth:
-        condition: service_healthy
-    build:
-      context: ./eth-statediff-fill-service
-    environment:
-      DATABASE_USER: "vdbm"
-      DATABASE_NAME: "indexer"
-      DATABASE_HOSTNAME: "ipld-eth-db"
-      DATABASE_PORT: 5432
-      DATABASE_PASSWORD: "password"
-      ETH_HTTP_PATH: "geth:8545"
-      WATCHED_ADDRESS_GAP_FILLER_INTERVAL: 60
-
   watch-address:
     restart: on-failure
     depends_on:
@@ -141,25 +123,11 @@ services:
       retries: 15
       start_period: 10s
 
-  mobymask-watcher:
-    restart: unless-stopped
-    depends_on:
-      ipld-eth-server:
-        condition: service_healthy
-      watcher-db:
-        condition: service_healthy
-    build:
-      context: ./watcher-ts
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
-
   mobymask-watcher-server:
-    profiles:
-      - active-watcher
     restart: unless-stopped
     depends_on:
+      geth:
+        condition: service_healthy
       ipld-eth-server:
         condition: service_healthy
       watcher-db:
@@ -179,8 +147,6 @@ services:
       start_period: 5s
 
   mobymask-watcher-job-runner:
-    profiles:
-      - active-watcher
     restart: unless-stopped
     depends_on:
       ipld-eth-server:
