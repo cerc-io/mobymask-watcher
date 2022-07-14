@@ -13,19 +13,37 @@
 
 ## Run
 
-* Start watcher-db service:
+* Start `ipld-eth-db` and `watcher-db` services:
 
   ```bash
-  docker-compose up -d --build watcher-db
+  docker-compose up -d --build ipld-eth-db watcher-db
   ```
 
-* Check that watcher-db service is up and healthy
+* Check that services `ipld-eth-db` and `watcher-db` are up and healthy:
 
   ```bash
   docker-compose ps
   ```
 
-* Dump indexed data for old mainnet blocks in mobymask-watcher database:
+* Uncompress data dumps:
+
+  ```bash
+  tar -xzvf ipld-eth-db/mainnet-indexer-db.tar.gz -C ipld-eth-db/
+
+  tar -xzvf watcher-ts/mobymask-watcher-db.tar.gz -C watcher-ts/
+  ```
+
+* Import statediff data for old blocks in `indexer` database:
+
+  ```bash
+  docker-compose exec ipld-eth-db psql -U vdbm indexer -c "SELECT timescaledb_pre_restore();"
+
+  docker-compose exec -T ipld-eth-db psql -U vdbm indexer < ipld-eth-db/mainnet-indexer-db.sql
+
+  docker-compose exec ipld-eth-db psql -U vdbm indexer -c "SELECT timescaledb_post_restore();"
+  ```
+
+* Import indexed data for old blocks in `mobymask-watcher` database:
 
   ```bash
   docker-compose exec -T watcher-db psql -U vdbm mobymask-watcher < watcher-ts/mobymask-watcher-db.sql
