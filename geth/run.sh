@@ -28,3 +28,4 @@ geth \
 	--http.api "web3,eth,statediff,net,debug" \
 	--http.vhosts "*" \
 	--ws \
+	--snapshot=false
