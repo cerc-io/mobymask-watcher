@@ -16,7 +16,7 @@
   type = "postgres"
   host = "watcher-db"
   port = 5432
-  database = "moby-mask-watcher"
+  database = "mobymask-watcher"
   username = "vdbm"
   password = "password"
   synchronize = true
@@ -34,7 +34,7 @@
     deleteOnStart = false
 
 [jobQueue]
-  dbConnectionString = "postgres://vdbm:password@watcher-db/moby-mask-watcher-job-queue"
+  dbConnectionString = "postgres://vdbm:password@watcher-db/mobymask-watcher-job-queue"
   maxCompletionLagInSecs = 300
   jobDelayInMilliSecs = 100
   eventsInBatch = 50
