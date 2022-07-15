@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     depends_on:
       - migrations
-    image: vulcanize/ipld-eth-server:v4.1.0-alpha
+    image: vulcanize/ipld-eth-server:v4.1.1-alpha
     environment:
       VDB_COMMAND: "serve"
       ETH_SERVER_HTTPPATH: 0.0.0.0:8082
@@ -75,6 +75,7 @@ services:
       ETH_FORWARD_ETH_CALLS: "false"
       ETH_PROXY_ON_ERROR: "true"
       ETH_HTTP_PATH: "geth:8545"
+      ETH_SUPPORTS_STATEDIFF: "true"
     volumes:
       - type: bind
         source: ./ipld-eth-server/config.toml
