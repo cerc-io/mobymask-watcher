@@ -7,6 +7,6 @@ RUN echo "git clone https://github.com/vulcanize/MobyMask.git" && \
     cd app && git checkout use-laconic-watcher-as-hosted-index && \
     yarn
 
-WORKDIR /app/packages/hardhat
+RUN sed -i 's/localhost:8545/geth:8545/' /app/packages/hardhat/hardhat.config.js
 
-RUN sed -i 's/localhost:8545/geth:8545/' hardhat.config.js
+WORKDIR /app
