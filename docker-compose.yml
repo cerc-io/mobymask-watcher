@@ -75,6 +75,7 @@ services:
       ETH_FORWARD_ETH_CALLS: "false"
       ETH_PROXY_ON_ERROR: "true"
       ETH_HTTP_PATH: "geth:8545"
+      ETH_SUPPORTS_STATEDIFF: "true"
     volumes:
       - type: bind
         source: ./ipld-eth-server/config.toml
