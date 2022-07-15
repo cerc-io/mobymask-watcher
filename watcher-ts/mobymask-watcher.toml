@@ -26,7 +26,7 @@
   [upstream.ethServer]
     gqlApiEndpoint = "http://ipld-eth-server:8083/graphql"
     rpcProviderEndpoint = "http://ipld-eth-server:8082"
-    blockDelayInMilliSecs = 2000
+    blockDelayInMilliSecs = 60000
 
   [upstream.cache]
     name = "requests"
