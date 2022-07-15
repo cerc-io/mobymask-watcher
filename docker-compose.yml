@@ -125,6 +125,8 @@ services:
       start_period: 10s
 
   mobymask-watcher-server:
+    profiles:
+      - watcher
     restart: unless-stopped
     depends_on:
       geth:
@@ -146,6 +148,23 @@ services:
       timeout: 5s
       retries: 15
       start_period: 5s
+
+  mobymask-watcher-job-runner:
+    profiles:
+      - watcher
+    restart: unless-stopped
+    depends_on:
+      ipld-eth-server:
+        condition: service_healthy
+      mobymask-watcher-server:
+        condition: service_healthy
+      watcher-db:
+        condition: service_healthy
+    build:
+      context: ./watcher-ts
+    command: ["sh", "-c", "yarn job-runner"]
+    volumes:
+      - ./watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
 
 volumes:
   indexer_db_data:

@@ -42,7 +42,7 @@
   docker-compose exec -T watcher-db psql -U vdbm mobymask-watcher < watcher-ts/mobymask-watcher-db.sql
   ```
 
-* Intialize and start all services:
+* Intialize and start core services:
 
   ```bash
   docker-compose up -d --build
@@ -54,11 +54,11 @@
   docker-compose logs -f
   ```
 
-* Check if new block at chain head has been indexed by Geth. Run the following query in `mobymask-watcher-server` GraphQL [endpoint](http://127.0.0.1:3001/graphql) to get the latest block:
+* Check if new block at chain head has been indexed by Geth. Run the following query in `ipld-eth-server` GraphQL [endpoint](http://127.0.0.1:8083/graphiql) to get the latest block:
 
   ```graphql
   query {
-    latestBlock {
+    block {
       hash
       number
     }
@@ -68,18 +68,24 @@
   Confirm that a new block is returned i.e. it should be different from the previously indexed block for MobyMask contract:
 
   ```graphql
-  # Should not be equal to this result
+  # Should not be equal to this result (block number 14885755)
   {
     "data": {
-      "latestBlock": {
+      "block": {
         "hash": "0xafb470605fd86995175c2bb07ed62d9f78d1debff33ce2fc6f8d5f07a9ebeca2",
-        "number": 14885755
+        "number": "0xe3237b"
       }
     }
   }
   ```
 
-  **NOTE**: The new block number returned is the block from which Geth has started indexing. Running the GQL queries below with blocks before the returned block number will not return results in the watcher.
+  **NOTE**: The new block returned is the block from which Geth has started indexing. Running the GQL queries below with blocks before the returned block number will not return results in the watcher.
+
+* Run the watcher:
+
+  ```bash
+  docker-compose --profile watcher up -d --build
+  ```
 
 * The `isMember` map should be indexed with old mainnet blocks. Check the mobymask-watcher database table `is_member`:
 
@@ -107,6 +113,30 @@
   ```
 
   This query lazily fetches the contract data from `ipld-eth-server`.
+
+* Run the following GQL subscription in [GraphQL endpoint](http://127.0.0.1:3001/graphql) to watch for events:
+
+  ```graphql
+  subscription {
+    onEvent {
+      event {
+        __typename
+        ... on PhisherStatusUpdatedEvent {
+          entity
+          isPhisher
+        },
+        ... on MemberStatusUpdatedEvent {
+          entity
+          isMember
+        }
+      },
+      block {
+        number
+        hash
+      }
+    }
+  }
+  ```
 
 ## Reset
 
