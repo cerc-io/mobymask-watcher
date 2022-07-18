@@ -9,7 +9,7 @@ RUN echo "git clone https://github.com/vulcanize/assemblyscript.git" && \
 
 RUN echo "git clone https://github.com/vulcanize/watcher-ts.git" && \
     git clone https://github.com/vulcanize/watcher-ts.git /app && \
-    cd app && git checkout v0.2.5 && \
+    cd app && git checkout v0.2.6 && \
     cd packages/graph-node && yarn remove @vulcanize/assemblyscript && \
     yarn add https://github.com/vulcanize/assemblyscript.git#ng-integrate-asyncify && \
     cd /app && yarn && yarn link "@vulcanize/assemblyscript" && yarn build
