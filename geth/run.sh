@@ -19,6 +19,7 @@ geth \
 	--statediff.db.name=$DB_NAME \
 	--statediff.db.user=$DB_USER \
 	--statediff.db.password=$DB_PASSWORD \
+	--statediff.workers=10 \
 	--verbosity "3" \
 	--mainnet \
 	--http \
