@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     depends_on:
       - migrations
-    image: vulcanize/ipld-eth-server:v4.1.0-alpha
+    image: vulcanize/ipld-eth-server:v4.1.1-alpha
     environment:
       VDB_COMMAND: "serve"
       ETH_CHAIN_CONFIG: "/tmp/chain.json"

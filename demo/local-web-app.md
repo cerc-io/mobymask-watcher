@@ -41,7 +41,7 @@ Demo for running MobyMask react app locally with mobymask-watcher
 
 * The check for phishers in the app is done using mobymask-watcher GraphQL API. The code can be seen [here](https://github.com/vulcanize/MobyMask/blob/use-laconic-watcher-as-hosted-index/packages/react-app/src/PhisherCheck.jsx#L30).
 
-* The same steps can be performed for checking member status and endorsing new memebers.
+* The same steps can be performed for checking member status and endorsing new members.
 
 * Generate an invite link by clicking on `Create new invite link` button.
 
@@ -52,3 +52,11 @@ Demo for running MobyMask react app locally with mobymask-watcher
 * Revoke the invitation from the previous browser profile. The section for revoking invitations should be below `Create new invite link` button.
 
 * After transaction is confirmed the browser using the invitation should not be able to report new phishers or endorse members.
+
+## Reset / Clean up
+
+* To stop the services running in background run:
+
+  ```bash
+  docker-compose down -v
+  ```
