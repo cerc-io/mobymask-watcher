@@ -25,11 +25,11 @@
 * Update `isPhisher` and `isMember` maps in the deployed contract with names:
 
   ```bash
-  docker-compose exec mobymask yarn claimPhisher --contract $MOBY_ADDRESS --name oldPhisher
+  docker-compose exec -w /app/packages/hardhat  mobymask yarn claimPhisher --contract $MOBY_ADDRESS --name oldPhisher
   ```
 
   ```bash
-  docker-compose exec mobymask yarn claimMember --contract $MOBY_ADDRESS --name oldMember
+  docker-compose exec -w /app/packages/hardhat mobymask yarn claimMember --contract $MOBY_ADDRESS --name oldMember
   ```
 
 * Stop the docker services and reset the indexer database to demonstrate statediffing only for the watched address. The database will later be filled by `eth-statediff-fill-service` with data only for the watched address. 
@@ -56,7 +56,7 @@
   * Get the block at which it was deployed. We can get this information from a JSON file created on deploying the contract:
 
     ```bash
-    docker-compose exec mobymask cat deployments/localhost/PhisherRegistry.json | grep blockNumber
+    docker-compose exec -w /app/packages/hardhat mobymask cat deployments/localhost/PhisherRegistry.json | grep blockNumber
     ```
 
     Set the MobyMask contract deployment block number:
@@ -168,11 +168,11 @@
 * Update contract `isPhisher` and `isMember` maps with new names:
 
   ```bash
-  docker-compose exec mobymask yarn claimPhisher --contract $MOBY_ADDRESS --name newPhisher 
+  docker-compose exec -w /app/packages/hardhat mobymask yarn claimPhisher --contract $MOBY_ADDRESS --name newPhisher 
   ```
 
   ```bash
-  docker-compose exec mobymask yarn claimMember --contract $MOBY_ADDRESS --name newMember
+  docker-compose exec -w /app/packages/hardhat mobymask yarn claimMember --contract $MOBY_ADDRESS --name newMember
   ```
 
 * The events should be visible in the subscription at GQL endpoint. Note down the event blockHash from result.

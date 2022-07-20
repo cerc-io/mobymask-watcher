@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     depends_on:
       - migrations
-    image: vulcanize/ipld-eth-server:v4.1.0-alpha
+    image: vulcanize/ipld-eth-server:v4.1.1-alpha
     environment:
       VDB_COMMAND: "serve"
       ETH_CHAIN_CONFIG: "/tmp/chain.json"
@@ -180,10 +180,34 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - moby_data:/app/packages/hardhat
+      - moby_data_server:/app/packages/server
+      - moby_data_hardhat:/app/packages/hardhat
+      - ./mobymask/secrets.json:/app/packages/server/secrets.json
+
+  mobymask-app:
+    profiles: ["watcher"]
+    restart: unless-stopped
+    depends_on:
+      geth:
+        condition: service_healthy
+      mobymask-watcher-server:
+        condition: service_healthy
+    build:
+      context: ./mobymask
+    working_dir: /app/packages/react-app
+    environment:
+      - SKIP_PREFLIGHT_CHECK=true
+    command: ["sh", "-c", "yarn configGen && yarn start"]
+    volumes:
+      - moby_data_server:/app/packages/server
+      - moby_data_hardhat:/app/packages/hardhat
+      - ./mobymask/.env.app:/app/packages/react-app/.env
+    ports:
+      - "0.0.0.0:3000:3000"
 
 volumes:
   indexer_db_data:
   geth_data:
   watcher_db_data:
-  moby_data:
+  moby_data_server:
+  moby_data_hardhat:
