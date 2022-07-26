@@ -2,108 +2,6 @@ version: '3.2'
 
 services:
 
-  migrations:
-    restart: on-failure
-    depends_on:
-      ipld-eth-db:
-        condition: service_healthy
-    image: vulcanize/ipld-eth-db:v4.2.0-alpha
-    environment:
-      DATABASE_USER: "vdbm"
-      DATABASE_NAME: "indexer"
-      DATABASE_PASSWORD: "password"
-      DATABASE_HOSTNAME: "ipld-eth-db"
-      DATABASE_PORT: 5432
-
-  ipld-eth-db:
-    restart: unless-stopped
-    image: timescale/timescaledb:latest-pg14
-    environment:
-      POSTGRES_USER: "vdbm"
-      POSTGRES_DB: "indexer"
-      POSTGRES_PASSWORD: "password"
-    volumes:
-      - indexer_db_data:/var/lib/postgresql/data
-    ports:
-      - "0.0.0.0:15434:5432"
-    command: ["postgres", "-c", "log_statement=all"]
-    healthcheck:
-      test: ["CMD", "nc", "-v", "localhost", "5432"]
-      interval: 20s
-      timeout: 5s
-      retries: 15
-      start_period: 10s
-
-  geth:
-    restart: unless-stopped
-    depends_on:
-      - migrations
-    build:
-      context: ./geth
-    environment:
-      DB_USER: vdbm
-      DB_NAME: indexer
-      DB_HOST: ipld-eth-db
-      DB_PORT: 5432
-      DB_PASSWORD: password
-    volumes:
-      - $CHAINDATA_DIR:/app/data/geth/chaindata
-    ports:
-      - "0.0.0.0:8545:8545"
-    healthcheck:
-      test: ["CMD", "nc", "-v", "localhost", "8545"]
-      interval: 20s
-      timeout: 5s
-      retries: 15
-      start_period: 5s
-
-  ipld-eth-server:
-    restart: unless-stopped
-    depends_on:
-      - migrations
-    image: vulcanize/ipld-eth-server:v4.1.3-alpha
-    environment:
-      VDB_COMMAND: "serve"
-      ETH_SERVER_HTTPPATH: 0.0.0.0:8082
-      ETH_SERVER_GRAPHQL: "true"
-      ETH_SERVER_GRAPHQLPATH: 0.0.0.0:8083
-      DATABASE_USER: "vdbm"
-      DATABASE_NAME: indexer
-      DATABASE_HOSTNAME: ipld-eth-db
-      DATABASE_PORT: 5432
-      DATABASE_PASSWORD: "password"
-      ETH_FORWARD_ETH_CALLS: "false"
-      ETH_PROXY_ON_ERROR: "true"
-      ETH_HTTP_PATH: "geth:8545"
-      ETH_SUPPORTS_STATEDIFF: "true"
-    volumes:
-      - type: bind
-        source: ./ipld-eth-server/config.toml
-        target: /app/config.toml
-    ports:
-    # RPC
-      - "0.0.0.0:8082:8082"
-    # GraphQL
-      - "0.0.0.0:8083:8083"
-    healthcheck:
-      test: ["CMD", "nc", "-v", "localhost", "8082"]
-      interval: 20s
-      timeout: 5s
-      retries: 15
-      start_period: 5s
-
-  watch-address:
-    restart: on-failure
-    depends_on:
-      geth:
-        condition: service_healthy
-    build:
-      context: ./watch-address
-    environment:
-      MOBY_ADDRESS: $MOBY_ADDRESS
-      DEPLOY_BLOCK_NUMBER: $DEPLOY_BLOCK_NUMBER
-      GETH_HTTP_PATH: "geth:8545"
-
   watcher-db:
     restart: unless-stopped
     image: postgres:12-alpine
@@ -125,14 +23,8 @@ services:
       start_period: 10s
 
   mobymask-watcher-server:
-    profiles:
-      - watcher
     restart: unless-stopped
     depends_on:
-      geth:
-        condition: service_healthy
-      ipld-eth-server:
-        condition: service_healthy
       watcher-db:
         condition: service_healthy
     build:
@@ -150,12 +42,8 @@ services:
       start_period: 5s
 
   mobymask-watcher-job-runner:
-    profiles:
-      - watcher
     restart: unless-stopped
     depends_on:
-      ipld-eth-server:
-        condition: service_healthy
       mobymask-watcher-server:
         condition: service_healthy
       watcher-db:
