@@ -3,7 +3,6 @@
 geth \
 	--datadir ./data \
 	--syncmode full \
-	--gcmode archive \
 	--cache 10000 \
 	--cache.database 50 \
 	--cache.trie 50 \
