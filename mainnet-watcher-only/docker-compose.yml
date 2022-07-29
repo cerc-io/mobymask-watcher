@@ -11,7 +11,7 @@ services:
       - POSTGRES_EXTENSION=mobymask-watcher-job-queue:pgcrypto
       - POSTGRES_PASSWORD=password
     volumes:
-      - ./initdb.d/multiple-postgressql-databases.sh:/docker-entrypoint-initdb.d/multiple-postgressql-databases.sh
+      - ../common/initdb.d/multiple-postgressql-databases.sh:/docker-entrypoint-initdb.d/multiple-postgressql-databases.sh
       - watcher_db_data:/var/lib/postgresql/data
     ports:
       - "0.0.0.0:15432:5432"
@@ -28,10 +28,10 @@ services:
       watcher-db:
         condition: service_healthy
     build:
-      context: ./watcher-ts
+      context: ../common/watcher-ts
     command: ["sh", "-c", "yarn server"]
     volumes:
-      - ./watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
+      - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     ports:
       - "0.0.0.0:3001:3001"
     healthcheck:
@@ -49,10 +49,10 @@ services:
       watcher-db:
         condition: service_healthy
     build:
-      context: ./watcher-ts
+      context: ../common/watcher-ts
     command: ["sh", "-c", "yarn job-runner"]
     volumes:
-      - ./watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
+      - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
 
 volumes:
   indexer_db_data:
