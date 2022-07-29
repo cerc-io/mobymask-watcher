@@ -1,27 +1,15 @@
 # mobymask-watcher
 
-## Run
+Docker services for mobymask-watcher
 
-* Intialize servers:
+Following readmes include steps to run mobymask-watcher in different ways:
 
-  ```bash
-  docker-compose up --build -d
-  ```
+- [Run with mainnet LevelDB data](./mainnet/README.md)
 
-* Optionally, to follow the container logs:
+- [Run with ipld-eth-server endpoint](./mainnet-watcher-only/)
 
-  ```bash
-  docker-compose logs -f
-  ```
+- Local Demos:
 
-## Reset
+  - [Run with eth-statediff-fill-service](./local/fill-demo.md)
 
-* Reset databases:
-
-  ```bash
-  docker-compose down -v
-  ```
-
-## Demos
-
-* [Local demo](./demo/local.md)
+  - [Run with MobyMask React app](./local/webapp-demo.md)

@@ -1,0 +1,18 @@
+[database]
+    name     = "indexer" # $DATABASE_NAME
+    hostname = "ipld-eth-db" # $DATABASE_HOSTNAME
+    port     = 5432 # $DATABASE_PORT
+    user     = "vdbm" # $DATABASE_USER
+    password = "password" # $DATABASE_PASSWORD
+
+[log]
+    level = "debug" # $LOGRUS_LEVEL
+
+[eth]
+    [eth.server]
+        ws = true
+        wsPath = "0.0.0.0:8081" # $SERVER_WS_PATH
+        http = true
+        httpPath = "0.0.0.0:8082" # $SERVER_HTTP_PATH
+        graphql = true # $SERVER_GRAPHQL
+        graphqlPath = "0.0.0.0:8083" # $SERVER_GRAPHQL_ENDPOINT
