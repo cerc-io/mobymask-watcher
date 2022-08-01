@@ -1,0 +1,213 @@
+version: '3.2'
+
+services:
+
+  migrations:
+    restart: on-failure
+    depends_on:
+      ipld-eth-db:
+        condition: service_healthy
+    image: vulcanize/ipld-eth-db:v4.2.0-alpha
+    environment:
+      DATABASE_USER: "vdbm"
+      DATABASE_NAME: "indexer"
+      DATABASE_PASSWORD: "password"
+      DATABASE_HOSTNAME: "ipld-eth-db"
+      DATABASE_PORT: 5432
+
+  ipld-eth-db:
+    restart: unless-stopped
+    image: timescale/timescaledb:latest-pg14
+    environment:
+      POSTGRES_USER: "vdbm"
+      POSTGRES_DB: "indexer"
+      POSTGRES_PASSWORD: "password"
+    volumes:
+      - indexer_db_data:/var/lib/postgresql/data
+    ports:
+      - "0.0.0.0:15434:5432"
+    command: ["postgres", "-c", "log_statement=all"]
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "5432"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
+
+  geth:
+    restart: unless-stopped
+    depends_on:
+      - migrations
+    build:
+      context: ./geth
+    environment:
+      DB_USER: vdbm
+      DB_NAME: indexer
+      DB_HOST: ipld-eth-db
+      DB_PORT: 5432
+      DB_PASSWORD: password
+    volumes:
+      - geth_data:/app/data
+    ports:
+      - "0.0.0.0:8545:8545"
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "8545"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+
+  ipld-eth-server:
+    restart: unless-stopped
+    depends_on:
+      - migrations
+    image: vulcanize/ipld-eth-server:v4.1.1-alpha
+    environment:
+      VDB_COMMAND: "serve"
+      ETH_CHAIN_CONFIG: "/tmp/chain.json"
+      ETH_SERVER_HTTPPATH: 0.0.0.0:8082
+      ETH_SERVER_GRAPHQL: "true"
+      ETH_SERVER_GRAPHQLPATH: 0.0.0.0:8083
+      DATABASE_USER: "vdbm"
+      DATABASE_NAME: indexer
+      DATABASE_HOSTNAME: ipld-eth-db
+      DATABASE_PORT: 5432
+      DATABASE_PASSWORD: "password"
+      ETH_CHAIN_ID: 41337
+      ETH_FORWARD_ETH_CALLS: "false"
+      ETH_PROXY_ON_ERROR: "true"
+      ETH_HTTP_PATH: "geth:8545"
+    volumes:
+      - type: bind
+        source: ./ipld-eth-server/chain.json
+        target: /tmp/chain.json
+    ports:
+    # RPC
+      - "0.0.0.0:8082:8082"
+    # GraphQL
+      - "0.0.0.0:8083:8083"
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "8082"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+
+  eth-statediff-fill-service:
+    restart: unless-stopped
+    depends_on:
+      migrations:
+        condition: service_started
+      geth:
+        condition: service_healthy
+    build:
+      context: ./eth-statediff-fill-service
+    environment:
+      DATABASE_USER: "vdbm"
+      DATABASE_NAME: "indexer"
+      DATABASE_HOSTNAME: "ipld-eth-db"
+      DATABASE_PORT: 5432
+      DATABASE_PASSWORD: "password"
+      ETH_HTTP_PATH: "geth:8545"
+      WATCHED_ADDRESS_GAP_FILLER_INTERVAL: 60
+
+  watcher-db:
+    restart: unless-stopped
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_USER=vdbm
+      - POSTGRES_MULTIPLE_DATABASES=mobymask-watcher,mobymask-watcher-job-queue
+      - POSTGRES_EXTENSION=mobymask-watcher-job-queue:pgcrypto
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ../common/initdb.d/multiple-postgressql-databases.sh:/docker-entrypoint-initdb.d/multiple-postgressql-databases.sh
+      - watcher_db_data:/var/lib/postgresql/data
+    ports:
+      - "0.0.0.0:15432:5432"
+    profiles: ["watcher"]
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "5432"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
+
+  mobymask-watcher-server:
+    restart: unless-stopped
+    depends_on:
+      ipld-eth-server:
+        condition: service_healthy
+      watcher-db:
+        condition: service_healthy
+    build:
+      context: ../common/watcher-ts
+    command: ["sh", "-c", "yarn server"]
+    volumes:
+      - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
+    ports:
+      - "0.0.0.0:3001:3001"
+    profiles: ["watcher"]
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "3001"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+
+  mobymask-watcher-job-runner:
+    restart: unless-stopped
+    depends_on:
+      ipld-eth-server:
+        condition: service_healthy
+      mobymask-watcher-server:
+        condition: service_healthy
+      watcher-db:
+        condition: service_healthy
+    build:
+      context: ../common/watcher-ts
+    command: ["sh", "-c", "yarn job-runner"]
+    volumes:
+      - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
+    profiles: ["watcher"]
+
+  mobymask:
+    restart: unless-stopped
+    depends_on:
+      geth:
+        condition: service_healthy
+    build:
+      context: ./mobymask
+    stdin_open: true
+    tty: true
+    volumes:
+      - moby_data_server:/app/packages/server
+      - moby_data_hardhat:/app/packages/hardhat
+      - ./mobymask/secrets.json:/app/packages/server/secrets.json
+
+  mobymask-app:
+    profiles: ["watcher"]
+    restart: unless-stopped
+    depends_on:
+      geth:
+        condition: service_healthy
+      mobymask-watcher-server:
+        condition: service_healthy
+    build:
+      context: ./mobymask
+    working_dir: /app/packages/react-app
+    environment:
+      - SKIP_PREFLIGHT_CHECK=true
+    command: ["sh", "-c", "yarn configGen && yarn start"]
+    volumes:
+      - moby_data_server:/app/packages/server
+      - moby_data_hardhat:/app/packages/hardhat
+      - ./mobymask/.env.app:/app/packages/react-app/.env
+    ports:
+      - "0.0.0.0:3000:3000"
+
+volumes:
+  indexer_db_data:
+  geth_data:
+  watcher_db_data:
+  moby_data_server:
+  moby_data_hardhat:

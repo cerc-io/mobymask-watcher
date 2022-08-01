@@ -12,6 +12,9 @@
   # IPFS API address (can be taken from the output on running the IPFS daemon).
   # ipfsApiAddr = "/ip4/127.0.0.1/tcp/5001"
 
+  # Boolean to filter logs by contract.
+  filterLogs = true
+
 [database]
   type = "postgres"
   host = "watcher-db"
@@ -26,7 +29,7 @@
   [upstream.ethServer]
     gqlApiEndpoint = "http://ipld-eth-server:8083/graphql"
     rpcProviderEndpoint = "http://ipld-eth-server:8082"
-    blockDelayInMilliSecs = 2000
+    blockDelayInMilliSecs = 60000
 
   [upstream.cache]
     name = "requests"

@@ -1,4 +1,4 @@
-# Demo
+# Local Demo
 
 * Start the core services:
 
@@ -40,7 +40,7 @@
 
   # Remove the indexer database
   docker-compose rm -f ipld-eth-db
-  docker volume rm mobymask-watcher_indexer_db_data
+  docker volume rm local_indexer_db_data
   ```
 
 * Start all the services (core and watcher) now: 

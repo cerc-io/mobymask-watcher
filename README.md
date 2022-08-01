@@ -1,27 +1,9 @@
-# mobymask-watcher
+# MobyMask Watcher
 
-## Run
+- Run [local demo](./local/README.md)
 
-* Intialize servers:
+- Run on mainnet:
 
-  ```bash
-  docker-compose up --build -d
-  ```
+  - Run [full stack](./mainnet/README.md) with leveldb from snap synced geth node
 
-* Optionally, to follow the container logs:
-
-  ```bash
-  docker-compose logs -f
-  ```
-
-## Reset
-
-* Reset databases:
-
-  ```bash
-  docker-compose down -v
-  ```
-
-## Demos
-
-* [Local demo](./demo/local.md)
+  - Run [watcher only](./mainnet-watcher-only/README.md) with existing core services
