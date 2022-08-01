@@ -1,4 +1,4 @@
-# Demo
+# Local Web App Demo
 
 Demo for running MobyMask react app locally with mobymask-watcher
 
@@ -31,7 +31,7 @@ Demo for running MobyMask react app locally with mobymask-watcher
 
 * Import an account in Metamask that has balance in the local Geth network. The private key for the account is available in [this file](../geth/keys/0xDC7d7A8920C8Eecc098da5B7522a5F31509b5Bfc.prv).
 
-* In the [React app](http://localhost:3000/#/members) check for a phisher name. It should say that it is not a registered phisher as there are not reports yet.
+* In the [React app](http://localhost:3000/#/members) check for a phisher name. It should say that it is not a registered phisher as there are no reports yet.
 
 * Before making transactions, it may be required to [reset account in Metamask](https://metamask.zendesk.com/hc/en-us/articles/360015488891-How-to-reset-your-account).
 

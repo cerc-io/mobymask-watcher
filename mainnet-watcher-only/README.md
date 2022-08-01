@@ -1,14 +1,14 @@
-# mainnet-watcher-only
+# Mainnet Deployment (Watcher Only)
 
 ## Setup
 
-* Update the `upstream.ethServer` endpoints in [mobymask-watcher config file](../common/watcher-ts/mobymask-watcher.toml) to point to ipld-eth-server.
+* Update the `upstream.ethServer` endpoints in [mobymask-watcher config file](../common/watcher-ts/mobymask-watcher.toml) to point to an already deployed `ipld-eth-server`.
 
   ```toml
   [upstream]
     [upstream.ethServer]
-      gqlApiEndpoint = "http://host.docker.internal:8083/graphql"
-      rpcProviderEndpoint = "http://host.docker.internal:8082"
+      gqlApiEndpoint = "http://ipld-eth-server.example.com:8083/graphql"
+      rpcProviderEndpoint = "http://ipld-eth-server.example.com:8082"
   ```
 
 ## Run

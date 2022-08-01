@@ -1,15 +1,9 @@
-# mobymask-watcher
+# MobyMask Watcher
 
-Docker services for mobymask-watcher
+- Run [local demo](./local/README.md)
 
-Following readmes include steps to run mobymask-watcher in different ways:
+- Run on mainnet:
 
-- [Run with mainnet LevelDB data](./mainnet/README.md)
+  - Run [full stack](./mainnet/README.md) with leveldb from snap synced geth node
 
-- [Run with ipld-eth-server endpoint](./mainnet-watcher-only/)
-
-- Local Demos:
-
-  - [Run with eth-statediff-fill-service](./local/fill-demo.md)
-
-  - [Run with MobyMask React app](./local/webapp-demo.md)
+  - Run [watcher only](./mainnet-watcher-only/README.md) with existing core services

@@ -1,4 +1,4 @@
-# mainnet
+# Mainnet Deployment
 
 ## Setup
 
@@ -68,12 +68,12 @@
   Confirm that a new block is returned i.e. it should be different from the previously indexed block for MobyMask contract:
 
   ```graphql
-  # Should not be equal to this result (block number 14885755)
+  # Should not be equal to this result (block number 15234194)
   {
     "data": {
       "block": {
-        "hash": "0xafb470605fd86995175c2bb07ed62d9f78d1debff33ce2fc6f8d5f07a9ebeca2",
-        "number": "0xe3237b"
+        "hash": "0x1f1f9ddf5435def50e966563a68afc302b1d43b1ead0c15a3b3397a17c452eb9",
+        "number": "0xe87492"
       }
     }
   }
