@@ -6,7 +6,7 @@
     password = "password" # $DATABASE_PASSWORD
 
 [log]
-    level = "debug" # $LOGRUS_LEVEL
+    level = "info" # $LOGRUS_LEVEL
 
 [eth]
     [eth.server]
