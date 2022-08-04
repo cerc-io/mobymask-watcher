@@ -2,7 +2,9 @@
 
 ## Setup
 
-* Update `CHAINDATA_DIR` variable in [.env](./.env) file to point to Geth LevelDB directory.
+* Snap synced Geth leveldb data is required for running the services.
+
+* Update `CHAINDATA_DIR` variable in [.env](./.env) file to point to Geth leveldb directory.
 
 ## Run
 
