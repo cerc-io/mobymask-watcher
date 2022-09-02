@@ -7,7 +7,7 @@ services:
     depends_on:
       ipld-eth-db:
         condition: service_healthy
-    image: vulcanize/ipld-eth-db:v4.2.0-alpha
+    image: vulcanize/ipld-eth-db:v4.2.1-alpha
     environment:
       DATABASE_USER: "vdbm"
       DATABASE_NAME: "indexer"
@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     depends_on:
       - migrations
-    image: vulcanize/ipld-eth-server:v4.1.1-alpha
+    image: vulcanize/ipld-eth-server:v4.1.6-alpha
     environment:
       VDB_COMMAND: "serve"
       ETH_CHAIN_CONFIG: "/tmp/chain.json"
@@ -146,6 +146,7 @@ services:
       - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     ports:
       - "0.0.0.0:3001:3001"
+      - "0.0.0.0:9001:9001"
     profiles: ["watcher"]
     healthcheck:
       test: ["CMD", "nc", "-v", "localhost", "3001"]
@@ -169,6 +170,8 @@ services:
     volumes:
       - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     profiles: ["watcher"]
+    ports:
+      - "0.0.0.0:9000:9000"
 
   mobymask:
     restart: unless-stopped
