@@ -60,4 +60,3 @@ services:
 volumes:
   indexer_db_data:
   watcher_db_data:
-  moby_data:

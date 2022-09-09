@@ -187,7 +187,7 @@
   docker-compose exec watcher-db psql -U vdbm mobymask-watcher -c "SELECT block_hash, block_number, contract_address, key0, value FROM is_member"
   ```
 
-  There should be entries for the event blockHash with `value` set to true. The data is indexed in `handleEvent` method in the [hooks file](https://github.com/vulcanize/watcher-ts/blob/main/packages/mobymask-watcher/src/hooks.ts).
+  There should be entries for the event blockHash with `value` set to true. The data is indexed in `handleEvent` method in the [hooks file](https://github.com/cerc-io/watcher-ts/blob/main/packages/mobymask-watcher/src/hooks.ts).
 
 * Query with event blockHash and check `isPhisher` and `isMember` in GraphQL playground for the new names:
 
