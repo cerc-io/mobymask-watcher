@@ -39,7 +39,7 @@ Demo for running MobyMask react app locally with mobymask-watcher
 
 * After the transaction is confirmed check the status for the reported phisher names.
 
-* The check for phishers in the app is done using mobymask-watcher GraphQL API. The code can be seen [here](https://github.com/vulcanize/MobyMask/blob/use-laconic-watcher-as-hosted-index/packages/react-app/src/PhisherCheck.jsx#L30).
+* The check for phishers in the app is done using mobymask-watcher GraphQL API. The code can be seen [here](https://github.com/cerc-io/MobyMask/blob/use-laconic-watcher-as-hosted-index/packages/react-app/src/PhisherCheck.jsx#L31).
 
 * The same steps can be performed for checking member status and endorsing new members.
 

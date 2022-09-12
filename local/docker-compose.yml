@@ -143,7 +143,7 @@ services:
       context: ../common/watcher-ts
     command: ["sh", "-c", "yarn server"]
     volumes:
-      - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
+      - ./watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     ports:
       - "0.0.0.0:3001:3001"
       - "0.0.0.0:9001:9001"
@@ -168,7 +168,7 @@ services:
       context: ../common/watcher-ts
     command: ["sh", "-c", "yarn job-runner"]
     volumes:
-      - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
+      - ./watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     profiles: ["watcher"]
     ports:
       - "0.0.0.0:9000:9000"
