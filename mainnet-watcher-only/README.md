@@ -49,10 +49,14 @@
   docker-compose logs -f
   ```
 
-* The `isMember` map should be indexed with old mainnet blocks. Check the mobymask-watcher database table `is_member`:
+* The `isMember` and `isPhisher` maps should be indexed (including old mainnet blocks). Check the mobymask-watcher database tables `is_phisher` and `is_member`:
 
   ```bash
   docker-compose exec watcher-db psql -U vdbm mobymask-watcher -c "SELECT block_hash, block_number, contract_address, key0, value FROM is_member"
+  ```
+
+  ```bash
+  docker-compose exec watcher-db psql -U vdbm mobymask-watcher -c "SELECT block_hash, block_number, contract_address, key0, value FROM is_phisher"
   ```
 
 * Get the latest block using the following query in [GraphQL endpoint](http://127.0.0.1:3001/graphql):
@@ -66,10 +70,21 @@
   }
   ```
 
-* Run the following GQL query in [GraphQL endpoint](http://127.0.0.1:3001/graphql) with the existing member names:
+* Run the following GQL queries in [GraphQL endpoint](http://127.0.0.1:3001/graphql) with the existing phisher and member names:
 
   ```graphql
   query {
+    isPhisher(
+      blockHash: "LATEST_BLOCK_HASH"
+      contractAddress: "0xB06E6DB9288324738f04fCAAc910f5A60102C1F8",
+      key0: "PHISHER_NAME"
+    ) {
+      value
+      proof {
+        data
+      }
+    }
+
     isMember(
       blockHash: "LATEST_BLOCK_HASH"
       contractAddress: "0xB06E6DB9288324738f04fCAAc910f5A60102C1F8"
@@ -84,30 +99,6 @@
   ```
 
   This query lazily fetches the contract data from `ipld-eth-server`.
-
-* Run the following GQL subscription in [GraphQL endpoint](http://127.0.0.1:3001/graphql) to watch for events:
-
-  ```graphql
-  subscription {
-    onEvent {
-      event {
-        __typename
-        ... on PhisherStatusUpdatedEvent {
-          entity
-          isPhisher
-        },
-        ... on MemberStatusUpdatedEvent {
-          entity
-          isMember
-        }
-      },
-      block {
-        number
-        hash
-      }
-    }
-  }
-  ```
 
 ## Reset
 
