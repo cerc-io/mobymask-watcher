@@ -2,9 +2,17 @@
 
 ## Setup
 
-* Snap synced Geth leveldb data is required for running the services.
+* Snap synced Geth node and synced Lighthouse node are required for running the services.
 
 * Update `CHAINDATA_DIR` variable in [.env](./.env) file to point to Geth leveldb directory.
+
+* Update `LIGHTHOUSE_DIR` variable in [.env](./.env) file to point to Lighthouse data directory.
+
+* Create a `jwtsecret` file required by both Geth and Lighthouse clients:
+
+  ```bash
+  ./makejwt.sh
+  ```
 
 ## Run
 

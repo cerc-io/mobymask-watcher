@@ -48,6 +48,7 @@ services:
       DB_PASSWORD: password
     volumes:
       - $CHAINDATA_DIR:/app/data/geth/chaindata
+      - ./jwtsecret:/app/jwtsecret
     ports:
       - "0.0.0.0:8545:8545"
     healthcheck:
@@ -56,6 +57,21 @@ services:
       timeout: 5s
       retries: 15
       start_period: 5s
+
+  lighthouse:
+    image: sigp/lighthouse:latest
+    command: sh /root/scripts/run.sh
+    restart: on-failure
+    volumes:
+      - $LIGHTHOUSE_DIR:/root/.lighthouse
+      - ./jwtsecret:/root/.lighthouse/jwtsecret
+      - ./lighthouse/run.sh:/root/scripts/run.sh:ro
+    ports:
+      - "0.0.0.0:5052:5052/tcp" # api
+      - "0.0.0.0:5053:5053/tcp" #
+      - "0.0.0.0:5054:5054/tcp" # metrics
+      - "9100:9000/tcp" # p2p
+      - "9100:9000/udp" # p2p
 
   ipld-eth-server:
     restart: unless-stopped
