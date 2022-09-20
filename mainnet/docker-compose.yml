@@ -106,7 +106,7 @@ services:
 
   watcher-db:
     restart: unless-stopped
-    image: postgres:12-alpine
+    image: postgres:14-alpine
     environment:
       - POSTGRES_USER=vdbm
       - POSTGRES_MULTIPLE_DATABASES=mobymask-watcher,mobymask-watcher-job-queue
