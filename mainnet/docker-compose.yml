@@ -7,7 +7,7 @@ services:
     depends_on:
       ipld-eth-db:
         condition: service_healthy
-    image: vulcanize/ipld-eth-db:v4.2.1-alpha
+    image: git.vdb.to/cerc-io/ipld-eth-db/ipld-eth-db:v4.2.1-alpha-unstable
     environment:
       DATABASE_USER: "vdbm"
       DATABASE_NAME: "indexer"
@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     depends_on:
       - migrations
-    image: vulcanize/ipld-eth-server:v4.1.7-alpha
+    image: cerc-io/ipld-eth-server:v4.1.8-alpha
     environment:
       VDB_COMMAND: "serve"
       ETH_SERVER_HTTPPATH: 0.0.0.0:8082
