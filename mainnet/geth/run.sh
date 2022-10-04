@@ -21,6 +21,10 @@ geth \
 	--statediff.workers=10 \
 	--verbosity "3" \
 	--mainnet \
+	--authrpc.addr "0.0.0.0" \
+	--authrpc.port "8551" \
+	--authrpc.vhosts "*" \
+	--authrpc.jwtsecret ./jwtsecret \
 	--http \
 	--http.addr "0.0.0.0" \
 	--http.port "8545" \
