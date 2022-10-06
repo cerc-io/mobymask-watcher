@@ -7,7 +7,7 @@ services:
     depends_on:
       ipld-eth-db:
         condition: service_healthy
-    image: git.vdb.to/cerc-io/ipld-eth-db:v4.2.1-alpha-unstable
+    image: git.vdb.to/cerc-io/ipld-eth-db/ipld-eth-db:v4.2.1-alpha-unstable
     environment:
       DATABASE_USER: "vdbm"
       DATABASE_NAME: "indexer"
@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     depends_on:
       - migrations
-    image: gti.vdb.to/cerc-io/ipld-eth-server:v4.1.8-alpha
+    image: git.vdb.to/cerc-io/ipld-eth-server/ipld-eth-server:v4.2.0-alpha
     environment:
       VDB_COMMAND: "serve"
       ETH_CHAIN_CONFIG: "/tmp/chain.json"

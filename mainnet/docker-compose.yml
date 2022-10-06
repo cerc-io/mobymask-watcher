@@ -77,7 +77,7 @@ services:
     restart: unless-stopped
     depends_on:
       - migrations
-    image: cerc-io/ipld-eth-server:v4.1.8-alpha
+    image: git.vdb.to/cerc-io/ipld-eth-server/ipld-eth-server:v4.2.0-alpha
     environment:
       VDB_COMMAND: "serve"
       ETH_SERVER_HTTPPATH: 0.0.0.0:8082
