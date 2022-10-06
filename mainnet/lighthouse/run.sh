@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Start a beacon node.
-
 lighthouse \
 	--debug-level info \
 	--network mainnet \
