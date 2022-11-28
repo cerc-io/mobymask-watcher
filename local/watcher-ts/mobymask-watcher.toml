@@ -9,8 +9,8 @@
   # Checkpoint interval in number of blocks.
   checkpointInterval = 2000
 
-  # IPFS API address (can be taken from the output on running the IPFS daemon).
-  # ipfsApiAddr = "/ip4/127.0.0.1/tcp/5001"
+  # Enable state creation
+  enableState = true
 
   # Boolean to filter logs by contract.
   filterLogs = true
@@ -39,7 +39,6 @@
   [upstream.ethServer]
     gqlApiEndpoint = "http://ipld-eth-server:8083/graphql"
     rpcProviderEndpoint = "http://ipld-eth-server:8082"
-    blockDelayInMilliSecs = 2000
 
   [upstream.cache]
     name = "requests"
@@ -51,3 +50,6 @@
   maxCompletionLagInSecs = 300
   jobDelayInMilliSecs = 100
   eventsInBatch = 50
+  blockDelayInMilliSecs = 2000
+  prefetchBlocksInMem = true
+  prefetchBlockCount = 10

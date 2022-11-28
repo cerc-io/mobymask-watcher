@@ -27,9 +27,11 @@ services:
     depends_on:
       watcher-db:
         condition: service_healthy
+      mobymask-watcher-job-runner:
+        condition: service_healthy
     build:
       context: ../common/watcher-ts
-    command: ["sh", "-c", "yarn server"]
+    command: ["node", "--enable-source-maps", "dist/server.js"]
     volumes:
       - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     ports:
@@ -45,17 +47,21 @@ services:
   mobymask-watcher-job-runner:
     restart: unless-stopped
     depends_on:
-      mobymask-watcher-server:
-        condition: service_healthy
       watcher-db:
         condition: service_healthy
     build:
       context: ../common/watcher-ts
-    command: ["sh", "-c", "yarn job-runner"]
+    command: ["node", "--enable-source-maps", "dist/job-runner.js"]
     volumes:
       - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     ports:
       - "0.0.0.0:9000:9000"
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "9000"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
 
 volumes:
   indexer_db_data:
