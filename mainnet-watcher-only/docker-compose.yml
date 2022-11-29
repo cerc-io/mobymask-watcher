@@ -5,11 +5,7 @@ services:
   watcher-db:
     restart: unless-stopped
     image: postgres:14-alpine
-    environment:
-      - POSTGRES_USER=vdbm
-      - POSTGRES_MULTIPLE_DATABASES=mobymask-watcher,mobymask-watcher-job-queue
-      - POSTGRES_EXTENSION=mobymask-watcher-job-queue:pgcrypto
-      - POSTGRES_PASSWORD=password
+    env_file: ./watcher.env
     volumes:
       - ../common/initdb.d/multiple-postgressql-databases.sh:/docker-entrypoint-initdb.d/multiple-postgressql-databases.sh
       - watcher_db_data:/var/lib/postgresql/data
@@ -27,9 +23,11 @@ services:
     depends_on:
       watcher-db:
         condition: service_healthy
+      mobymask-watcher-job-runner:
+        condition: service_healthy
     build:
       context: ../common/watcher-ts
-    command: ["sh", "-c", "yarn server"]
+    command: ["node", "--enable-source-maps", "dist/server.js"]
     volumes:
       - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     ports:
@@ -45,17 +43,21 @@ services:
   mobymask-watcher-job-runner:
     restart: unless-stopped
     depends_on:
-      mobymask-watcher-server:
-        condition: service_healthy
       watcher-db:
         condition: service_healthy
     build:
       context: ../common/watcher-ts
-    command: ["sh", "-c", "yarn job-runner"]
+    command: ["node", "--enable-source-maps", "dist/job-runner.js"]
     volumes:
       - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     ports:
       - "0.0.0.0:9000:9000"
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "9000"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
 
 volumes:
   indexer_db_data:

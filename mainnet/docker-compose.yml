@@ -7,7 +7,7 @@ services:
     depends_on:
       ipld-eth-db:
         condition: service_healthy
-    image: git.vdb.to/cerc-io/ipld-eth-db/ipld-eth-db:v4.2.1-alpha-unstable
+    image: git.vdb.to/cerc-io/ipld-eth-db/ipld-eth-db:v4.2.3-alpha
     environment:
       DATABASE_USER: "vdbm"
       DATABASE_NAME: "indexer"
@@ -77,7 +77,7 @@ services:
     restart: unless-stopped
     depends_on:
       - migrations
-    image: git.vdb.to/cerc-io/ipld-eth-server/ipld-eth-server:v4.2.0-alpha
+    image: git.vdb.to/cerc-io/ipld-eth-server/ipld-eth-server:v4.2.3-alpha
     environment:
       VDB_COMMAND: "serve"
       ETH_SERVER_HTTPPATH: 0.0.0.0:8082
@@ -123,11 +123,7 @@ services:
   watcher-db:
     restart: unless-stopped
     image: postgres:14-alpine
-    environment:
-      - POSTGRES_USER=vdbm
-      - POSTGRES_MULTIPLE_DATABASES=mobymask-watcher,mobymask-watcher-job-queue
-      - POSTGRES_EXTENSION=mobymask-watcher-job-queue:pgcrypto
-      - POSTGRES_PASSWORD=password
+    env_file: ./watcher.env
     volumes:
       - ../common/initdb.d/multiple-postgressql-databases.sh:/docker-entrypoint-initdb.d/multiple-postgressql-databases.sh
       - watcher_db_data:/var/lib/postgresql/data
@@ -151,9 +147,11 @@ services:
         condition: service_healthy
       watcher-db:
         condition: service_healthy
+      mobymask-watcher-job-runner:
+        condition: service_healthy
     build:
       context: ../common/watcher-ts
-    command: ["sh", "-c", "yarn server"]
+    command: ["node", "--enable-source-maps", "dist/server.js"]
     volumes:
       - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     ports:
@@ -173,17 +171,21 @@ services:
     depends_on:
       ipld-eth-server:
         condition: service_healthy
-      mobymask-watcher-server:
-        condition: service_healthy
       watcher-db:
         condition: service_healthy
     build:
       context: ../common/watcher-ts
-    command: ["sh", "-c", "yarn job-runner"]
+    command: ["node", "--enable-source-maps", "dist/job-runner.js"]
     volumes:
       - ../common/watcher-ts/mobymask-watcher.toml:/app/packages/mobymask-watcher/environments/local.toml
     ports:
       - "0.0.0.0:9000:9000"
+    healthcheck:
+      test: ["CMD", "nc", "-v", "localhost", "9000"]
+      interval: 20s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
 
 volumes:
   indexer_db_data:

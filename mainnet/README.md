@@ -14,6 +14,12 @@
   ./makejwt.sh
   ```
 
+* Create a `watcher.env` file from [watcher.env.sample](./watcher.env.sample) with updated DB credentials:
+
+  ```
+  cp watcher.env.sample watcher.env
+  ```
+
 ## Run
 
 * Start `ipld-eth-db` and `watcher-db` services:

@@ -1,5 +1,15 @@
 # Local Demo
 
+## Setup
+
+* Create a `watcher.env` file from [watcher.env.sample](./watcher.env.sample) with updated DB credentials:
+
+  ```
+  cp watcher.env.sample watcher.env
+  ```
+
+## Run
+
 * Start the core services:
 
   ```bash
@@ -15,7 +25,7 @@
   # ✅  Published contracts to the subgraph package.
   # Done in 14.28s.
   ```
-  
+
   Export the address of the deployed contract to a shell variable for later use:
 
   ```bash
@@ -32,7 +42,7 @@
   docker-compose exec -w /app/packages/hardhat mobymask yarn claimMember --contract $MOBY_ADDRESS --name oldMember
   ```
 
-* Stop the docker services and reset the indexer database to demonstrate statediffing only for the watched address. The database will later be filled by `eth-statediff-fill-service` with data only for the watched address. 
+* Stop the docker services and reset the indexer database to demonstrate statediffing only for the watched address. The database will later be filled by `eth-statediff-fill-service` with data only for the watched address.
 
   ```bash
   # Stop the docker services
@@ -43,7 +53,7 @@
   docker volume rm local_indexer_db_data
   ```
 
-* Start all the services (core and watcher) now: 
+* Start all the services (core and watcher) now:
 
   ```bash
   docker-compose --profile watcher up --build -d
@@ -84,7 +94,7 @@
   ```
 
   A message for running gap filler should appear at the end. Example:
-  
+
   ```bash
   eth-statediff-fill-service_1    | time="2022-07-05T09:17:59Z" level=info msg="running watched address gap filler for block range: (30, 137)"
   ```
@@ -168,7 +178,7 @@
 * Update contract `isPhisher` and `isMember` maps with new names:
 
   ```bash
-  docker-compose exec -w /app/packages/hardhat mobymask yarn claimPhisher --contract $MOBY_ADDRESS --name newPhisher 
+  docker-compose exec -w /app/packages/hardhat mobymask yarn claimPhisher --contract $MOBY_ADDRESS --name newPhisher
   ```
 
   ```bash
@@ -203,7 +213,7 @@
         data
       }
     }
-    
+
     isMember(
       blockHash: "EVENT_BLOCK_HASH"
       contractAddress: "MOBY_ADDRESS",

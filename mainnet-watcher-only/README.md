@@ -2,6 +2,12 @@
 
 ## Setup
 
+* Create a `watcher.env` file from [watcher.env.sample](./watcher.env.sample) with updated DB credentials:
+
+  ```
+  cp watcher.env.sample watcher.env
+  ```
+
 * Update the `upstream.ethServer` endpoints in [mobymask-watcher config file](../common/watcher-ts/mobymask-watcher.toml) to point to an already deployed `ipld-eth-server`.
 
   ```toml
