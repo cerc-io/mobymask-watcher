@@ -1,4 +1,6 @@
-# Mainnet Deployment
+**NOTICE:**
+
+The instructions below have been replaced by the [mobymask stack](https://github.com/cerc-io/stack-orchestrator/tree/main/app/data/stacks/mobymask-v2) in Stack Orchestrator.
 
 ## Setup
 
